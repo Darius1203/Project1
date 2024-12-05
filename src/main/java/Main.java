@@ -61,9 +61,7 @@ public class Main extends Application {
 
         final LoginView loginView = new LoginView(primaryStage);
 
-        final UserValidator userValidator = new UserValidator(userRepository);
-
-        new LoginController(loginView, authenticationService, userValidator);
+        new LoginController(loginView, authenticationService);
     }
 }
 
