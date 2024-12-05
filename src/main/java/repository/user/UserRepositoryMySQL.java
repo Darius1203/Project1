@@ -1,6 +1,7 @@
 package repository.user;
 import model.User;
 import model.builder.UserBuilder;
+import model.validator.Notification;
 import repository.security.RightsRolesRepository;
 
 import java.sql.Connection;
@@ -13,7 +14,7 @@ import java.util.List;
 import static database.Constants.Tables.USER;
 import static java.util.Collections.singletonList;
 
-public class UserRepositoryMySQL implements repository.user.UserRepository {
+public class UserRepositoryMySQL implements UserRepository {
 
     private final Connection connection;
     private final RightsRolesRepository rightsRolesRepository;
@@ -35,9 +36,9 @@ public class UserRepositoryMySQL implements repository.user.UserRepository {
     // ' or username LIKE '%admin%'; --
 
     @Override
-    public User findByUsernameAndPassword(String username, String password) {
+    public Notification<User> findByUsernameAndPassword(String username, String password) {
 
-
+        Notification<User> findByUsernameAndPasswordNotification = new Notification<>();
         try {
             Statement statement = connection.createStatement();
 
@@ -52,14 +53,18 @@ public class UserRepositoryMySQL implements repository.user.UserRepository {
                         .setRoles(rightsRolesRepository.findRolesForUser(userResultSet.getLong("id")))
                         .build();
 
-                return user;
+                findByUsernameAndPasswordNotification.setResult(user);
+            } else {
+                findByUsernameAndPasswordNotification.addError("Invalid username or password!");
+                return findByUsernameAndPasswordNotification;
             }
 
         } catch (SQLException e) {
             System.out.println(e.toString());
+            findByUsernameAndPasswordNotification.addError("Something is wrong with the Database!");
         }
 
-        return null;
+        return findByUsernameAndPasswordNotification;
     }
 
     @Override
