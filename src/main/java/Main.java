@@ -27,23 +27,44 @@ import static database.Constants.Schemas.PRODUCTION;
 
 public class Main extends Application {
 
-    public static void main(String[] args){
-        launch(args);
-    }
+    /*public static void main(String[] args) {
+        System.out.println("Hello world!");
 
+        BookRepository bookRepository = new BookRepositoryCacheDecorator(
+                new BookRepositoryMySQL(DatabaseConnectionFactory.getConnectionWrapper(true).getConnection()),
+                new Cache<>()
+        );
+
+        BookService bookService = new BookServiceImpl(bookRepository);
+
+        Connection connection = DatabaseConnectionFactory.getConnectionWrapper(true).getConnection();
+
+        RightsRolesRepository rightsRolesRepository = new RightsRolesRepositoryMySQL(connection);
+        UserRepository userRepository = new UserRepositoryMySQL(connection, rightsRolesRepository);
+
+        AuthenticationService authenticationService = new AuthenticationServiceMySQL(userRepository, rightsRolesRepository);
+
+        authenticationService.register("Darius", "parola123!");
+
+        System.out.println(authenticationService.login("Darius", "parola123!"));
+    }*/
+
+    public static void main(String[] args) { launch(args); }
     @Override
     public void start(Stage primaryStage) throws Exception {
-      final Connection connection = new JDBConnectionWrapper(PRODUCTION).getConnection();
+        final Connection connection = new JDBConnectionWrapper(PRODUCTION).getConnection();
 
-      final  RightsRolesRepository rightsRolesRepository = new RightsRolesRepositoryMySQL(connection);
-      final  UserRepository userRepository = new UserRepositoryMySQL(connection, rightsRolesRepository);
+        final  RightsRolesRepository rightsRolesRepository = new RightsRolesRepositoryMySQL(connection);
+        final  UserRepository userRepository = new UserRepositoryMySQL(connection, rightsRolesRepository);
 
-      final  AuthenticationService authenticationService = new AuthenticationServiceMySQL(userRepository, rightsRolesRepository);
+        final  AuthenticationService authenticationService = new AuthenticationServiceMySQL(userRepository, rightsRolesRepository);
 
-      final LoginView loginView = new LoginView(primaryStage);
+        final LoginView loginView = new LoginView(primaryStage);
 
-      final UserValidator userValidator = new UserValidator(userRepository);
+        final UserValidator userValidator = new UserValidator(userRepository);
 
-      new LoginController(loginView, authenticationService, userValidator);
+        new LoginController(loginView, authenticationService, userValidator);
     }
 }
+
+
